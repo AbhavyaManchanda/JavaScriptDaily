@@ -36,7 +36,7 @@ nav ul li{
     padding:50px;
     text-align:center;
     border: 2px solid papayawhip;
-    height:40vh;
+    height:60vh;
     margin:10px;
 }
 .hero h1{
@@ -58,17 +58,20 @@ hero{
     height:5vh;
     display: flex; 
     justify-content: center;
+    align-items: center;
     
 }
 .searchbar {
     width: 50%;
-    height: 50px;
+    height: 15px;
     padding: 10px;
+    margin-top:15px;
+    /* padding-top:10px; */
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 .searchbtn{
-    height: 50px;
+    height: 45px;
     width:100px;
     padding: 10px ;
     margin-left: 10px;
@@ -81,12 +84,17 @@ hero{
  
 .filter-topic,
 .filter-date {
+    background-color: #ebd9d9;
     padding: 10px;
-    font-size: 16px;
+    margin-left:10px;
+    margin-top:15px;
+    font-size: 14px;
     border-radius: 8px;
     border: 1px solid #ccc;
     outline: none;
     min-width: 180px;
+    text-align: center;
+    justify-content: center;
 }
 
 .searchbar:focus,
@@ -100,3 +108,4 @@ hero{
 .searchbtn:hover {
     background-color: #447acc;
 }
+
