@@ -24,6 +24,7 @@ const blogs = [
     author: "Alice",
   },
 ];
+const debouncedFilter = debounce(applyFilters, 300);
 
 const blogContainer = document.querySelector(".blog-container");
 const searchInput = document.querySelector(".searchbar");
@@ -71,10 +72,20 @@ function applyFilters() {
 
 }
 
+function debounce(func, delay) {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+ 
 searchBtn.addEventListener("click", applyFilters);
-searchInput.addEventListener("input", applyFilters);
+searchInput.addEventListener("input", debouncedFilter);
 topicFilter.addEventListener("change", applyFilters);
 authorFilter.addEventListener("change", applyFilters);
 document.addEventListener("DOMContentLoaded", () => {
-  renderBlogs(blogs); // Initial render
+  renderBlogs(blogs);  
 });
