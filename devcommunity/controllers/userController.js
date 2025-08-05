@@ -17,25 +17,20 @@ const registerUser = async(req,res) => {
     })
 
     await user.save();
-         
-
-
-    // For now, we will just send a success response
-    //res.status(201).json({ message: "User registered successfully", user: { name, emailId } });
 }
 
-module.exports = registerUser;
 
-const loginUser = (req, res) => {
+
+const loginUser = async(req, res) => {
     const { emailId, password } = req.body;
 
     if (!emailId || !password) {
         return res.status(400).json({ message: "Email and password are required" });
     }
-
-    // Here you would typically check the user credentials against the database
-
-    // For now, we will just send a success response
-    res.status(200).json({ message: "User logged in successfully", user: { emailId } });
-    
+    const userExists = await User.findOne({ emailId });
+    if (!userExists) {
+        return res.status(404).json({ message: "User not found" });
+    }
 }
+
+module.exports = {loginUser, registerUser};
