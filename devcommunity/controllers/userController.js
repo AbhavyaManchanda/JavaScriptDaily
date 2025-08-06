@@ -1,36 +1,59 @@
-const User=require("../models/userModel");
+const User = require("../models/userModel");
+const bcrypt = require("bcrypt");
+const generateToken = require("..generateToken");
 
-const registerUser = async(req,res) => {
-    const { name, emailId, password } = req.body;
+const registerUser = async (req, res) => {
+  const { firstName, lastName, emailId, password } = req.body;
 
-    if (!name || !emailId || !password) {
-        return res.status(400).json({ message: "All fields are required" });
-    }
+  if (!firstName || !lastName || !emailId || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
-    // Here you would typically save the user to the database
-     
-     const user = new User({
-        "firstName": "Pransh",
-        "lastName": "Maurya",
-        "emailId": "pransh@gmail.com",
-        "password": "Pransh@123"
-    })
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    await user.save();
-}
+  const userExists = await User.find({ emailId });
 
+  if (userExists.length > 0) {
+    return res.status(400).json({ message: "User already exists" });
+  }
 
+  const user = await User.create({
+    firstName,
+    lastName,
+    emailId,
+    password: hashedPassword,
+    updatedAt: Date.now(),
+  });
 
-const loginUser = async(req, res) => {
-    const { emailId, password } = req.body;
+  await user.save();
+};
 
-    if (!emailId || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-    }
-    const userExists = await User.findOne({ emailId });
-    if (!userExists) {
-        return res.status(404).json({ message: "User not found" });
-    }
-}
+const loginUser = async (req, res) => {
+  const { emailId, password } = req.body;
 
-module.exports = {loginUser, registerUser};
+  if (!emailId || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+  const userExists = await User.findOne({ emailId });
+  console.log(userExists);
+
+  if (!userExists) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  if (password != userExists.password) {
+    return res.status(401).send("Passwword is wrong");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, userExists.password);
+  if (!isPasswordValid) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  return res.status(200).json({
+    message: "loggin in",
+    user: userExists,
+  });
+};
+
+module.exports = { registerUser, loginUser };
