@@ -1,31 +1,41 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
-const generateToken = require("..generateToken");
+// const generateToken = require("..generateToken");
 
 const registerUser = async (req, res) => {
   const { firstName, lastName, emailId, password } = req.body;
+
 
   if (!firstName || !lastName || !emailId || !password) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  try{
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  const userExists = await User.find({ emailId });
+    
+    const user = await User.create({
+      firstName,
+      lastName,
+      emailId,
+      password: hashedPassword,
+      
+    });
 
-  if (userExists.length > 0) {
-    return res.status(400).json({ message: "User already exists" });
-  }
+    await user.save();
 
-  const user = await User.create({
-    firstName,
-    lastName,
-    emailId,
-    password: hashedPassword,
-    updatedAt: Date.now(),
-  });
+        return res.status(201).json({
+          message: "User Registered Successfully",
+          data: {
+            firstName,
+            emailId,
+            hashedPassword,
+          },
+      });
+    }catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
 
-  await user.save();
 };
 
 const loginUser = async (req, res) => {
@@ -35,17 +45,19 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ message: "Email and password are required" });
   }
   const userExists = await User.findOne({ emailId });
-  console.log(userExists);
+   
 
   if (!userExists) {
     return res.status(404).json({ message: "User not found" });
   }
 
-  if (password != userExists.password) {
-    return res.status(401).send("Passwword is wrong");
-  }
+  // if (password != userExists.password) {
+  //   return res.status(401).send("Passwword is wrong");
+  // }
 
-  const isPasswordValid = await bcrypt.compare(password, userExists.password);
+
+  try {
+    const isPasswordValid = await bcrypt.compare(password, userExists.password);
   if (!isPasswordValid) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
@@ -54,6 +66,10 @@ const loginUser = async (req, res) => {
     message: "loggin in",
     user: userExists,
   });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+  
 };
 
 module.exports = { registerUser, loginUser };
