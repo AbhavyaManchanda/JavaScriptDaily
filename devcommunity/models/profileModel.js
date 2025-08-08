@@ -3,6 +3,7 @@ const {Schema} = mongoose;
 
 const ProfileSchema = mongoose.Schema(
   {
+    userId:{type: mongoose.Schema.Types.ObjectId,required:true},
     experience: { type: String, required: true },
     skills: { type: [String], required: true },
     githubProfile: { type: String, required: true },
