@@ -66,7 +66,49 @@ const addProfileDetails = async (req, res) => {
   }
 };
 
-const updateProfileDetails = async (req, res) => {};
+
+
+const updateProfileDetails = async (req, res) => {
+
+  const {
+    experience,
+    skills,
+    githubProfile,
+    linkedInProfile,
+    acheivements,
+    codingPlatforms,
+  } = req.body;
+  
+  const id = req.user;
+
+  const userProfile = await Profile.findOne({ userId: id });
+  if (!userProfile) {
+    return res.status(404).json({ message: "Profile not found" });
+  }
+   
+  try {
+    userProfile.experience = experience;
+    userProfile.skills = skills;
+    userProfile.githubProfile = githubProfile;
+    userProfile.linkedInProfile = linkedInProfile;
+    userProfile.acheivements = acheivements;
+    userProfile.codingPlatforms = codingPlatforms;
+
+    await userProfile.save();
+
+    return res.status(200).json({
+      message: "Profile Updated Successfully",
+      data: userProfile,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+
+
+
+
+
+};
 
 module.exports = {
   getProfileDetails,
